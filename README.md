@@ -4,6 +4,8 @@ A small macOS menu bar app that shows the remaining balance of your OpenRouter
 account. It refreshes in the background and warns you when the balance drops
 below a threshold you choose.
 
+![OpenRouter Credits screenshot](screenshot.png)
+
 ## Features
 
 - Menu bar displays `creditcard.fill` and the current USD balance
@@ -144,7 +146,6 @@ OpenRouterCredits/
 OpenRouterCredits.xcodeproj    checked-in project and shared scheme
 OpenRouterCreditsTests/        XCTest target
 scripts/                       build, test, run, icon generation
-check-credits.sh               diagnostic curl helper for the API
 ```
 
 ## Not in scope
