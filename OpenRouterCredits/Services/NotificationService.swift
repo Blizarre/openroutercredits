@@ -45,9 +45,13 @@ final class NotificationService: LowBalanceNotifying {
         content.title = "OpenRouter balance is low"
         content.body = "Remaining balance is \(MoneyFormatter.string(from: balance)), below your \(MoneyFormatter.string(from: threshold)) threshold."
         content.sound = .default
+        content.threadIdentifier = "openrouter-low-balance"
 
+        // A unique identifier per alert avoids macOS treating a later alert
+        // as an update to an older notification that is still in Notification
+        // Center.
         let request = UNNotificationRequest(
-            identifier: "openrouter-low-balance",
+            identifier: "openrouter-low-balance-\(UUID().uuidString)",
             content: content,
             trigger: nil
         )

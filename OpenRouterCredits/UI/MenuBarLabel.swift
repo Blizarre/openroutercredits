@@ -7,6 +7,5 @@ struct MenuBarLabel: View {
         Label(store.menuBarText, systemImage: "creditcard.fill")
             .labelStyle(.titleAndIcon)
             .monospacedDigit()
-            .help(store.tooltip)
     }
 }

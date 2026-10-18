@@ -11,7 +11,11 @@ final class LaunchAtLoginController {
     private(set) var errorMessage: String?
 
     init() {
-        isEnabled = SMAppService.mainApp.status == .enabled
+        let status = SMAppService.mainApp.status
+        isEnabled = status == .enabled
+        errorMessage = status == .requiresApproval
+            ? "Allow OpenRouter Credits in System Settings › General › Login Items."
+            : nil
     }
 
     func setEnabled(_ enabled: Bool) {
@@ -21,8 +25,12 @@ final class LaunchAtLoginController {
             } else {
                 try SMAppService.mainApp.unregister()
             }
-            isEnabled = SMAppService.mainApp.status == .enabled
-            errorMessage = nil
+
+            let status = SMAppService.mainApp.status
+            isEnabled = status == .enabled
+            errorMessage = status == .requiresApproval
+                ? "Allow OpenRouter Credits in System Settings › General › Login Items."
+                : nil
         } catch {
             isEnabled = SMAppService.mainApp.status == .enabled
             errorMessage = error.localizedDescription

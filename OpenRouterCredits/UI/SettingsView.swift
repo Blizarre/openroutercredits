@@ -86,6 +86,16 @@ struct SettingsView: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
+
+            Section {
+                HStack {
+                    Spacer()
+                    Text(versionText)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                }
+            }
         }
         .formStyle(.grouped)
         .frame(width: 460)
@@ -100,6 +110,13 @@ struct SettingsView: View {
 
     private var trimmedKey: String {
         apiKey.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private var versionText: String {
+        let info = Bundle.main.infoDictionary
+        let version = info?["CFBundleShortVersionString"] as? String ?? "1.0"
+        let build = info?["CFBundleVersion"] as? String ?? "1"
+        return "OpenRouter Credits \(version) (\(build))"
     }
 
     private func saveKey() {

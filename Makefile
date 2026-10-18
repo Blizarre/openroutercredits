@@ -1,4 +1,4 @@
-.PHONY: build test run clean
+.PHONY: build test run icon clean
 
 build:
 	./scripts/build.sh
@@ -8,6 +8,9 @@ test:
 
 run:
 	./scripts/run.sh
+
+icon:
+	swift scripts/make-icon.swift
 
 clean:
 	rm -rf .build

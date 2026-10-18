@@ -3,6 +3,7 @@ import Foundation
 enum AppSettings {
     static let lowBalanceThresholdKey = "lowBalanceThreshold"
     static let lowBalanceWasBelowKey = "lowBalanceWasBelow"
+    static let lastLowBalanceThresholdKey = "lastLowBalanceThreshold"
 
     static let defaultLowBalanceThreshold: Decimal = 5
 

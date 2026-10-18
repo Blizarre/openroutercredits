@@ -63,21 +63,6 @@ final class CreditsStore {
         return MoneyFormatter.string(from: balance)
     }
 
-    var tooltip: String {
-        guard let balance else {
-            return "OpenRouter Credits — no balance yet"
-        }
-
-        var text = "OpenRouter Credits — \(MoneyFormatter.string(from: balance))"
-        if let lastUpdated {
-            text += "\nUpdated \(lastUpdated.formatted(date: .abbreviated, time: .shortened))"
-        }
-        if isStale {
-            text += "\nBalance is stale."
-        }
-        return text
-    }
-
     /// True when the displayed data is older than two refresh intervals.
     var isStale: Bool {
         guard let lastUpdated else { return false }
@@ -245,15 +230,35 @@ final class CreditsStore {
 
     private func evaluateLowBalance(remaining: Decimal) {
         let threshold = lowBalanceThreshold
-        let shouldNotify = lowBalanceTracker.shouldNotify(balance: remaining, threshold: threshold)
+        let thresholdValue = (threshold as NSDecimalNumber).doubleValue
+        let storedThreshold = userDefaults.object(
+            forKey: AppSettings.lastLowBalanceThresholdKey
+        ) as? Double
 
-        userDefaults.set(
-            lowBalanceTracker.wasBelowThreshold,
-            forKey: AppSettings.lowBalanceWasBelowKey
-        )
+        // A threshold change only rebases the crossing state. Notifications
+        // are for balance movements, not for the user editing the threshold.
+        // A missing stored threshold means this is the first evaluation.
+        if let storedThreshold, storedThreshold != thresholdValue {
+            lowBalanceTracker = LowBalanceTracker(
+                wasBelowThreshold: remaining < threshold
+            )
+            persistLowBalanceState(thresholdValue: thresholdValue)
+            return
+        }
+
+        let shouldNotify = lowBalanceTracker.shouldNotify(balance: remaining, threshold: threshold)
+        persistLowBalanceState(thresholdValue: thresholdValue)
 
         if shouldNotify {
             notificationService.notifyLowBalance(balance: remaining, threshold: threshold)
         }
+    }
+
+    private func persistLowBalanceState(thresholdValue: Double) {
+        userDefaults.set(thresholdValue, forKey: AppSettings.lastLowBalanceThresholdKey)
+        userDefaults.set(
+            lowBalanceTracker.wasBelowThreshold,
+            forKey: AppSettings.lowBalanceWasBelowKey
+        )
     }
 }

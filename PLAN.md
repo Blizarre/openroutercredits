@@ -20,7 +20,6 @@
 ## UX
 ### Menu bar
 - SF Symbol `creditcard.fill` + formatted USD balance
-- Tooltip with full balance and last update time
 
 ### Popover
 - Large balance, last updated / stale / error state
@@ -85,7 +84,7 @@ OpenRouterCredits/
 ## Risks
 - Management key is account-level admin: Keychain only
 - Notifications on unsigned local builds may be unreliable; fall back to in-app warning
-- Menu bar width: compact format + tooltip, optional icon-only mode later
+- Menu bar width: compact format, optional icon-only mode later
 
 ## Not in scope
 - Multiple accounts/workspaces
