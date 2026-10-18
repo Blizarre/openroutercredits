@@ -17,6 +17,7 @@ struct OpenRouterCreditsApp: App {
         Settings {
             SettingsView()
                 .environment(appDelegate.store)
+                .environment(appDelegate.launchAtLogin)
         }
     }
 }

@@ -35,6 +35,15 @@ struct PopoverView: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
 
+            if store.isLowBalance {
+                Label(
+                    "Low balance: below \(MoneyFormatter.string(from: store.lowBalanceThreshold))",
+                    systemImage: "exclamationmark.triangle.fill"
+                )
+                .font(.callout)
+                .foregroundStyle(.orange)
+            }
+
             Divider()
 
             HStack {

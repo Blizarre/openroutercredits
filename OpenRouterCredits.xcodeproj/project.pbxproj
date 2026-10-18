@@ -7,26 +7,31 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A1000000000000000000002A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000000D /* AppDelegate.swift */; };
-		A1000000000000000000002B /* OpenRouterCreditsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000000E /* OpenRouterCreditsApp.swift */; };
-		A1000000000000000000002C /* CreditsResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000000F /* CreditsResponse.swift */; };
-		A1000000000000000000002D /* CreditsSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000010 /* CreditsSnapshot.swift */; };
-		A1000000000000000000002E /* MoneyFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000011 /* MoneyFormatter.swift */; };
-		A1000000000000000000002F /* Backoff.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000012 /* Backoff.swift */; };
-		A10000000000000000000030 /* CreditsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000013 /* CreditsStore.swift */; };
-		A10000000000000000000031 /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000014 /* KeychainStore.swift */; };
-		A10000000000000000000032 /* OpenRouterAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000015 /* OpenRouterAPIClient.swift */; };
-		A10000000000000000000033 /* MenuBarLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000016 /* MenuBarLabel.swift */; };
-		A10000000000000000000034 /* PopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000017 /* PopoverView.swift */; };
-		A10000000000000000000035 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000018 /* SettingsView.swift */; };
-		A10000000000000000000036 /* SettingsWindowActivator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000019 /* SettingsWindowActivator.swift */; };
-		A10000000000000000000037 /* BackoffTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000001E /* BackoffTests.swift */; };
-		A10000000000000000000038 /* CreditsResponseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000001F /* CreditsResponseTests.swift */; };
-		A10000000000000000000039 /* CreditsSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000020 /* CreditsSnapshotTests.swift */; };
-		A1000000000000000000003A /* CreditsStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000021 /* CreditsStoreTests.swift */; };
-		A1000000000000000000003B /* MoneyFormatterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000022 /* MoneyFormatterTests.swift */; };
-		A1000000000000000000003C /* OpenRouterAPIClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000023 /* OpenRouterAPIClientTests.swift */; };
-		A1000000000000000000003D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000001B /* Assets.xcassets */; };
+		A1000000000000000000002F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000000D /* AppDelegate.swift */; };
+		A10000000000000000000030 /* OpenRouterCreditsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000000E /* OpenRouterCreditsApp.swift */; };
+		A10000000000000000000031 /* CreditsResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000000F /* CreditsResponse.swift */; };
+		A10000000000000000000032 /* CreditsSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000010 /* CreditsSnapshot.swift */; };
+		A10000000000000000000033 /* MoneyFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000011 /* MoneyFormatter.swift */; };
+		A10000000000000000000034 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000012 /* AppSettings.swift */; };
+		A10000000000000000000035 /* Backoff.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000013 /* Backoff.swift */; };
+		A10000000000000000000036 /* CreditsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000014 /* CreditsStore.swift */; };
+		A10000000000000000000037 /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000015 /* KeychainStore.swift */; };
+		A10000000000000000000038 /* LaunchAtLoginController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000016 /* LaunchAtLoginController.swift */; };
+		A10000000000000000000039 /* LowBalanceTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000017 /* LowBalanceTracker.swift */; };
+		A1000000000000000000003A /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000018 /* NotificationService.swift */; };
+		A1000000000000000000003B /* OpenRouterAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000019 /* OpenRouterAPIClient.swift */; };
+		A1000000000000000000003C /* MenuBarLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000001A /* MenuBarLabel.swift */; };
+		A1000000000000000000003D /* PopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000001B /* PopoverView.swift */; };
+		A1000000000000000000003E /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000001C /* SettingsView.swift */; };
+		A1000000000000000000003F /* SettingsWindowActivator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000001D /* SettingsWindowActivator.swift */; };
+		A10000000000000000000040 /* BackoffTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000022 /* BackoffTests.swift */; };
+		A10000000000000000000041 /* CreditsResponseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000023 /* CreditsResponseTests.swift */; };
+		A10000000000000000000042 /* CreditsSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000024 /* CreditsSnapshotTests.swift */; };
+		A10000000000000000000043 /* CreditsStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000025 /* CreditsStoreTests.swift */; };
+		A10000000000000000000044 /* LowBalanceTrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000026 /* LowBalanceTrackerTests.swift */; };
+		A10000000000000000000045 /* MoneyFormatterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000027 /* MoneyFormatterTests.swift */; };
+		A10000000000000000000046 /* OpenRouterAPIClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000028 /* OpenRouterAPIClientTests.swift */; };
+		A10000000000000000000047 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000001F /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,35 +40,40 @@
 		A1000000000000000000000F /* CreditsResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreditsResponse.swift; sourceTree = "<group>"; };
 		A10000000000000000000010 /* CreditsSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreditsSnapshot.swift; sourceTree = "<group>"; };
 		A10000000000000000000011 /* MoneyFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoneyFormatter.swift; sourceTree = "<group>"; };
-		A10000000000000000000012 /* Backoff.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Backoff.swift; sourceTree = "<group>"; };
-		A10000000000000000000013 /* CreditsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreditsStore.swift; sourceTree = "<group>"; };
-		A10000000000000000000014 /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = "<group>"; };
-		A10000000000000000000015 /* OpenRouterAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenRouterAPIClient.swift; sourceTree = "<group>"; };
-		A10000000000000000000016 /* MenuBarLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarLabel.swift; sourceTree = "<group>"; };
-		A10000000000000000000017 /* PopoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverView.swift; sourceTree = "<group>"; };
-		A10000000000000000000018 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-		A10000000000000000000019 /* SettingsWindowActivator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWindowActivator.swift; sourceTree = "<group>"; };
-		A1000000000000000000001E /* BackoffTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackoffTests.swift; sourceTree = "<group>"; };
-		A1000000000000000000001F /* CreditsResponseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreditsResponseTests.swift; sourceTree = "<group>"; };
-		A10000000000000000000020 /* CreditsSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreditsSnapshotTests.swift; sourceTree = "<group>"; };
-		A10000000000000000000021 /* CreditsStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreditsStoreTests.swift; sourceTree = "<group>"; };
-		A10000000000000000000022 /* MoneyFormatterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoneyFormatterTests.swift; sourceTree = "<group>"; };
-		A10000000000000000000023 /* OpenRouterAPIClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenRouterAPIClientTests.swift; sourceTree = "<group>"; };
-		A1000000000000000000001A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		A1000000000000000000001B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		A1000000000000000000001C /* OpenRouterCredits.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OpenRouterCredits.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		A1000000000000000000001D /* OpenRouterCreditsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OpenRouterCreditsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A10000000000000000000012 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
+		A10000000000000000000013 /* Backoff.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Backoff.swift; sourceTree = "<group>"; };
+		A10000000000000000000014 /* CreditsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreditsStore.swift; sourceTree = "<group>"; };
+		A10000000000000000000015 /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = "<group>"; };
+		A10000000000000000000016 /* LaunchAtLoginController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchAtLoginController.swift; sourceTree = "<group>"; };
+		A10000000000000000000017 /* LowBalanceTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LowBalanceTracker.swift; sourceTree = "<group>"; };
+		A10000000000000000000018 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+		A10000000000000000000019 /* OpenRouterAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenRouterAPIClient.swift; sourceTree = "<group>"; };
+		A1000000000000000000001A /* MenuBarLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarLabel.swift; sourceTree = "<group>"; };
+		A1000000000000000000001B /* PopoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverView.swift; sourceTree = "<group>"; };
+		A1000000000000000000001C /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		A1000000000000000000001D /* SettingsWindowActivator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWindowActivator.swift; sourceTree = "<group>"; };
+		A10000000000000000000022 /* BackoffTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackoffTests.swift; sourceTree = "<group>"; };
+		A10000000000000000000023 /* CreditsResponseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreditsResponseTests.swift; sourceTree = "<group>"; };
+		A10000000000000000000024 /* CreditsSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreditsSnapshotTests.swift; sourceTree = "<group>"; };
+		A10000000000000000000025 /* CreditsStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreditsStoreTests.swift; sourceTree = "<group>"; };
+		A10000000000000000000026 /* LowBalanceTrackerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LowBalanceTrackerTests.swift; sourceTree = "<group>"; };
+		A10000000000000000000027 /* MoneyFormatterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoneyFormatterTests.swift; sourceTree = "<group>"; };
+		A10000000000000000000028 /* OpenRouterAPIClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenRouterAPIClientTests.swift; sourceTree = "<group>"; };
+		A1000000000000000000001E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A1000000000000000000001F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A10000000000000000000020 /* OpenRouterCredits.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OpenRouterCredits.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A10000000000000000000021 /* OpenRouterCreditsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OpenRouterCreditsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		A10000000000000000000025 /* Frameworks */ = {
+		A1000000000000000000002A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		A10000000000000000000028 /* Frameworks */ = {
+		A1000000000000000000002D /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -87,7 +97,7 @@
 			children = (
 				A1000000000000000000000D /* AppDelegate.swift */,
 				A1000000000000000000000E /* OpenRouterCreditsApp.swift */,
-				A1000000000000000000001A /* Info.plist */,
+				A1000000000000000000001E /* Info.plist */,
 				A10000000000000000000009 /* Models */,
 				A1000000000000000000000A /* Services */,
 				A1000000000000000000000B /* UI */,
@@ -109,10 +119,14 @@
 		A1000000000000000000000A /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				A10000000000000000000012 /* Backoff.swift */,
-				A10000000000000000000013 /* CreditsStore.swift */,
-				A10000000000000000000014 /* KeychainStore.swift */,
-				A10000000000000000000015 /* OpenRouterAPIClient.swift */,
+				A10000000000000000000012 /* AppSettings.swift */,
+				A10000000000000000000013 /* Backoff.swift */,
+				A10000000000000000000014 /* CreditsStore.swift */,
+				A10000000000000000000015 /* KeychainStore.swift */,
+				A10000000000000000000016 /* LaunchAtLoginController.swift */,
+				A10000000000000000000017 /* LowBalanceTracker.swift */,
+				A10000000000000000000018 /* NotificationService.swift */,
+				A10000000000000000000019 /* OpenRouterAPIClient.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -120,10 +134,10 @@
 		A1000000000000000000000B /* UI */ = {
 			isa = PBXGroup;
 			children = (
-				A10000000000000000000016 /* MenuBarLabel.swift */,
-				A10000000000000000000017 /* PopoverView.swift */,
-				A10000000000000000000018 /* SettingsView.swift */,
-				A10000000000000000000019 /* SettingsWindowActivator.swift */,
+				A1000000000000000000001A /* MenuBarLabel.swift */,
+				A1000000000000000000001B /* PopoverView.swift */,
+				A1000000000000000000001C /* SettingsView.swift */,
+				A1000000000000000000001D /* SettingsWindowActivator.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -131,7 +145,7 @@
 		A1000000000000000000000C /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				A1000000000000000000001B /* Assets.xcassets */,
+				A1000000000000000000001F /* Assets.xcassets */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -139,12 +153,13 @@
 		A10000000000000000000007 /* OpenRouterCreditsTests */ = {
 			isa = PBXGroup;
 			children = (
-				A1000000000000000000001E /* BackoffTests.swift */,
-				A1000000000000000000001F /* CreditsResponseTests.swift */,
-				A10000000000000000000020 /* CreditsSnapshotTests.swift */,
-				A10000000000000000000021 /* CreditsStoreTests.swift */,
-				A10000000000000000000022 /* MoneyFormatterTests.swift */,
-				A10000000000000000000023 /* OpenRouterAPIClientTests.swift */,
+				A10000000000000000000022 /* BackoffTests.swift */,
+				A10000000000000000000023 /* CreditsResponseTests.swift */,
+				A10000000000000000000024 /* CreditsSnapshotTests.swift */,
+				A10000000000000000000025 /* CreditsStoreTests.swift */,
+				A10000000000000000000026 /* LowBalanceTrackerTests.swift */,
+				A10000000000000000000027 /* MoneyFormatterTests.swift */,
+				A10000000000000000000028 /* OpenRouterAPIClientTests.swift */,
 			);
 			path = OpenRouterCreditsTests;
 			sourceTree = "<group>";
@@ -152,8 +167,8 @@
 		A10000000000000000000005 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				A1000000000000000000001C /* OpenRouterCredits.app */,
-				A1000000000000000000001D /* OpenRouterCreditsTests.xctest */,
+				A10000000000000000000020 /* OpenRouterCredits.app */,
+				A10000000000000000000021 /* OpenRouterCreditsTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -163,11 +178,11 @@
 /* Begin PBXNativeTarget section */
 		A10000000000000000000001 /* OpenRouterCredits */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = A1000000000000000000003F /* Build configuration list for PBXNativeTarget "OpenRouterCredits" */;
+			buildConfigurationList = A10000000000000000000049 /* Build configuration list for PBXNativeTarget "OpenRouterCredits" */;
 			buildPhases = (
-				A10000000000000000000024 /* Sources */,
-				A10000000000000000000025 /* Frameworks */,
-				A10000000000000000000026 /* Resources */,
+				A10000000000000000000029 /* Sources */,
+				A1000000000000000000002A /* Frameworks */,
+				A1000000000000000000002B /* Resources */,
 			);
 			buildRules = (
 			);
@@ -175,16 +190,16 @@
 			);
 			name = OpenRouterCredits;
 			productName = OpenRouterCredits;
-			productReference = A1000000000000000000001C /* OpenRouterCredits.app */;
+			productReference = A10000000000000000000020 /* OpenRouterCredits.app */;
 			productType = "com.apple.product-type.application";
 		};
 		A10000000000000000000002 /* OpenRouterCreditsTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = A10000000000000000000040 /* Build configuration list for PBXNativeTarget "OpenRouterCreditsTests" */;
+			buildConfigurationList = A1000000000000000000004A /* Build configuration list for PBXNativeTarget "OpenRouterCreditsTests" */;
 			buildPhases = (
-				A10000000000000000000027 /* Sources */,
-				A10000000000000000000028 /* Frameworks */,
-				A10000000000000000000029 /* Resources */,
+				A1000000000000000000002C /* Sources */,
+				A1000000000000000000002D /* Frameworks */,
+				A1000000000000000000002E /* Resources */,
 			);
 			buildRules = (
 			);
@@ -192,7 +207,7 @@
 			);
 			name = OpenRouterCreditsTests;
 			productName = OpenRouterCreditsTests;
-			productReference = A1000000000000000000001D /* OpenRouterCreditsTests.xctest */;
+			productReference = A10000000000000000000021 /* OpenRouterCreditsTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -213,7 +228,7 @@
 					};
 				};
 			};
-			buildConfigurationList = A1000000000000000000003E /* Build configuration list for PBXProject "OpenRouterCredits" */;
+			buildConfigurationList = A10000000000000000000048 /* Build configuration list for PBXProject "OpenRouterCredits" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -233,15 +248,15 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		A10000000000000000000026 /* Resources */ = {
+		A1000000000000000000002B /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A1000000000000000000003D /* Assets.xcassets in Resources */,
+				A10000000000000000000047 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		A10000000000000000000029 /* Resources */ = {
+		A1000000000000000000002E /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -251,50 +266,58 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		A10000000000000000000024 /* Sources */ = {
+		A10000000000000000000029 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A1000000000000000000002A /* AppDelegate.swift in Sources */,
-				A1000000000000000000002B /* OpenRouterCreditsApp.swift in Sources */,
-				A1000000000000000000002C /* CreditsResponse.swift in Sources */,
-				A1000000000000000000002D /* CreditsSnapshot.swift in Sources */,
-				A1000000000000000000002E /* MoneyFormatter.swift in Sources */,
-				A1000000000000000000002F /* Backoff.swift in Sources */,
-				A10000000000000000000030 /* CreditsStore.swift in Sources */,
-				A10000000000000000000031 /* KeychainStore.swift in Sources */,
-				A10000000000000000000032 /* OpenRouterAPIClient.swift in Sources */,
-				A10000000000000000000033 /* MenuBarLabel.swift in Sources */,
-				A10000000000000000000034 /* PopoverView.swift in Sources */,
-				A10000000000000000000035 /* SettingsView.swift in Sources */,
-				A10000000000000000000036 /* SettingsWindowActivator.swift in Sources */,
+				A1000000000000000000002F /* AppDelegate.swift in Sources */,
+				A10000000000000000000030 /* OpenRouterCreditsApp.swift in Sources */,
+				A10000000000000000000031 /* CreditsResponse.swift in Sources */,
+				A10000000000000000000032 /* CreditsSnapshot.swift in Sources */,
+				A10000000000000000000033 /* MoneyFormatter.swift in Sources */,
+				A10000000000000000000034 /* AppSettings.swift in Sources */,
+				A10000000000000000000035 /* Backoff.swift in Sources */,
+				A10000000000000000000036 /* CreditsStore.swift in Sources */,
+				A10000000000000000000037 /* KeychainStore.swift in Sources */,
+				A10000000000000000000038 /* LaunchAtLoginController.swift in Sources */,
+				A10000000000000000000039 /* LowBalanceTracker.swift in Sources */,
+				A1000000000000000000003A /* NotificationService.swift in Sources */,
+				A1000000000000000000003B /* OpenRouterAPIClient.swift in Sources */,
+				A1000000000000000000003C /* MenuBarLabel.swift in Sources */,
+				A1000000000000000000003D /* PopoverView.swift in Sources */,
+				A1000000000000000000003E /* SettingsView.swift in Sources */,
+				A1000000000000000000003F /* SettingsWindowActivator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		A10000000000000000000027 /* Sources */ = {
+		A1000000000000000000002C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A10000000000000000000037 /* BackoffTests.swift in Sources */,
-				A10000000000000000000038 /* CreditsResponseTests.swift in Sources */,
-				A10000000000000000000039 /* CreditsSnapshotTests.swift in Sources */,
-				A1000000000000000000003A /* CreditsStoreTests.swift in Sources */,
-				A1000000000000000000003B /* MoneyFormatterTests.swift in Sources */,
-				A1000000000000000000003C /* OpenRouterAPIClientTests.swift in Sources */,
-				A1000000000000000000002D /* CreditsSnapshot.swift in Sources */,
-				A1000000000000000000002C /* CreditsResponse.swift in Sources */,
-				A1000000000000000000002E /* MoneyFormatter.swift in Sources */,
-				A1000000000000000000002F /* Backoff.swift in Sources */,
-				A10000000000000000000030 /* CreditsStore.swift in Sources */,
-				A10000000000000000000032 /* OpenRouterAPIClient.swift in Sources */,
-				A10000000000000000000031 /* KeychainStore.swift in Sources */,
+				A10000000000000000000040 /* BackoffTests.swift in Sources */,
+				A10000000000000000000041 /* CreditsResponseTests.swift in Sources */,
+				A10000000000000000000042 /* CreditsSnapshotTests.swift in Sources */,
+				A10000000000000000000043 /* CreditsStoreTests.swift in Sources */,
+				A10000000000000000000044 /* LowBalanceTrackerTests.swift in Sources */,
+				A10000000000000000000045 /* MoneyFormatterTests.swift in Sources */,
+				A10000000000000000000046 /* OpenRouterAPIClientTests.swift in Sources */,
+				A10000000000000000000032 /* CreditsSnapshot.swift in Sources */,
+				A10000000000000000000031 /* CreditsResponse.swift in Sources */,
+				A10000000000000000000033 /* MoneyFormatter.swift in Sources */,
+				A10000000000000000000034 /* AppSettings.swift in Sources */,
+				A10000000000000000000035 /* Backoff.swift in Sources */,
+				A10000000000000000000036 /* CreditsStore.swift in Sources */,
+				A10000000000000000000039 /* LowBalanceTracker.swift in Sources */,
+				A1000000000000000000003A /* NotificationService.swift in Sources */,
+				A1000000000000000000003B /* OpenRouterAPIClient.swift in Sources */,
+				A10000000000000000000037 /* KeychainStore.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		A10000000000000000000041 /* Debug */ = {
+		A1000000000000000000004B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -355,7 +378,7 @@
 			};
 			name = Debug;
 		};
-		A10000000000000000000042 /* Release */ = {
+		A1000000000000000000004C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -409,7 +432,7 @@
 			};
 			name = Release;
 		};
-		A10000000000000000000043 /* Debug */ = {
+		A1000000000000000000004D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -434,7 +457,7 @@
 			};
 			name = Debug;
 		};
-		A10000000000000000000044 /* Release */ = {
+		A1000000000000000000004E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -458,7 +481,7 @@
 			};
 			name = Release;
 		};
-		A10000000000000000000045 /* Debug */ = {
+		A1000000000000000000004F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "-";
@@ -474,7 +497,7 @@
 			};
 			name = Debug;
 		};
-		A10000000000000000000046 /* Release */ = {
+		A10000000000000000000050 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "-";
@@ -492,29 +515,29 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		A1000000000000000000003E /* Build configuration list for PBXProject "OpenRouterCredits" */ = {
+		A10000000000000000000048 /* Build configuration list for PBXProject "OpenRouterCredits" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				A10000000000000000000041 /* Debug */,
-				A10000000000000000000042 /* Release */,
+				A1000000000000000000004B /* Debug */,
+				A1000000000000000000004C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		A1000000000000000000003F /* Build configuration list for PBXNativeTarget "OpenRouterCredits" */ = {
+		A10000000000000000000049 /* Build configuration list for PBXNativeTarget "OpenRouterCredits" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				A10000000000000000000043 /* Debug */,
-				A10000000000000000000044 /* Release */,
+				A1000000000000000000004D /* Debug */,
+				A1000000000000000000004E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		A10000000000000000000040 /* Build configuration list for PBXNativeTarget "OpenRouterCredits" */ = {
+		A1000000000000000000004A /* Build configuration list for PBXNativeTarget "OpenRouterCredits" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				A10000000000000000000045 /* Debug */,
-				A10000000000000000000046 /* Release */,
+				A1000000000000000000004F /* Debug */,
+				A10000000000000000000050 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

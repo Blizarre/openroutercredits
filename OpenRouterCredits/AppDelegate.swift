@@ -5,6 +5,7 @@ import AppKit
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     let store = CreditsStore()
+    let launchAtLogin = LaunchAtLoginController()
 
     private var wakeObserver: NSObjectProtocol?
 

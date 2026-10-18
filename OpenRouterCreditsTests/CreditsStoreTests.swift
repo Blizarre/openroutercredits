@@ -40,13 +40,38 @@ private final class TestClock {
     var now = Date(timeIntervalSince1970: 1_000_000)
 }
 
+private final class MockNotifier: LowBalanceNotifying {
+    struct Call: Equatable {
+        let balance: Decimal
+        let threshold: Decimal
+    }
+
+    var calls: [Call] = []
+
+    func notifyLowBalance(balance: Decimal, threshold: Decimal) {
+        calls.append(Call(balance: balance, threshold: threshold))
+    }
+}
+
+private func makeTestDefaults() -> UserDefaults {
+    let suite = "OpenRouterCreditsTests.\(UUID().uuidString)"
+    let defaults = UserDefaults(suiteName: suite)!
+    defaults.removePersistentDomain(forName: suite)
+    return defaults
+}
+
 @MainActor
 final class CreditsStoreTests: XCTestCase {
     func testReadsKeyOnceAndCachesItAcrossRefreshes() async {
         let keyStore = MockKeyStore()
         keyStore.key = "cached-key"
         let client = MockClient(result: .success(CreditsSnapshot(totalCredits: 10, totalUsage: 2)))
-        let store = CreditsStore(client: client, keyStore: keyStore)
+        let store = CreditsStore(
+            client: client,
+            keyStore: keyStore,
+            userDefaults: makeTestDefaults(),
+            notificationService: MockNotifier()
+        )
 
         await store.refresh()
         await store.refresh()
@@ -60,7 +85,12 @@ final class CreditsStoreTests: XCTestCase {
     func testMissingKeyDoesNotCallAPI() async {
         let keyStore = MockKeyStore()
         let client = MockClient(result: .success(CreditsSnapshot(totalCredits: 1, totalUsage: 0)))
-        let store = CreditsStore(client: client, keyStore: keyStore)
+        let store = CreditsStore(
+            client: client,
+            keyStore: keyStore,
+            userDefaults: makeTestDefaults(),
+            notificationService: MockNotifier()
+        )
 
         await store.refresh()
 
@@ -74,7 +104,13 @@ final class CreditsStoreTests: XCTestCase {
         let keyStore = MockKeyStore()
         keyStore.key = "key"
         let client = MockClient(result: .success(CreditsSnapshot(totalCredits: 10, totalUsage: 2)))
-        let store = CreditsStore(client: client, keyStore: keyStore, now: { clock.now })
+        let store = CreditsStore(
+            client: client,
+            keyStore: keyStore,
+            now: { clock.now },
+            userDefaults: makeTestDefaults(),
+            notificationService: MockNotifier()
+        )
 
         await store.refresh()
         XCTAssertFalse(store.isStale)
@@ -86,7 +122,12 @@ final class CreditsStoreTests: XCTestCase {
     func testSavingKeyUpdatesCacheWithoutAnotherRead() async throws {
         let keyStore = MockKeyStore()
         let client = MockClient(result: .success(CreditsSnapshot(totalCredits: 10, totalUsage: 2)))
-        let store = CreditsStore(client: client, keyStore: keyStore)
+        let store = CreditsStore(
+            client: client,
+            keyStore: keyStore,
+            userDefaults: makeTestDefaults(),
+            notificationService: MockNotifier()
+        )
 
         try store.saveAPIKey("new-key")
         await store.refresh()
@@ -94,5 +135,60 @@ final class CreditsStoreTests: XCTestCase {
         XCTAssertEqual(store.savedAPIKey(), "new-key")
         XCTAssertEqual(keyStore.readCount, 1)
         XCTAssertEqual(keyStore.saveCount, 1)
+    }
+
+    func testLowBalanceNotifiesOnlyOnDownwardCrossing() async {
+        let keyStore = MockKeyStore()
+        keyStore.key = "key"
+        let notifier = MockNotifier()
+        let client = MockClient(result: .success(CreditsSnapshot(totalCredits: 3, totalUsage: 0)))
+        let store = CreditsStore(
+            client: client,
+            keyStore: keyStore,
+            userDefaults: makeTestDefaults(),
+            notificationService: notifier
+        )
+
+        await store.refresh()
+        XCTAssertEqual(notifier.calls.count, 1)
+        XCTAssertTrue(store.isLowBalance)
+
+        await store.refresh()
+        XCTAssertEqual(notifier.calls.count, 1)
+
+        client.result = .success(CreditsSnapshot(totalCredits: 10, totalUsage: 0))
+        await store.refresh()
+        XCTAssertFalse(store.isLowBalance)
+
+        client.result = .success(CreditsSnapshot(totalCredits: 2, totalUsage: 0))
+        await store.refresh()
+        XCTAssertEqual(notifier.calls.count, 2)
+    }
+
+    func testLowBalanceStatePersistsAcrossStores() async {
+        let defaults = makeTestDefaults()
+        let keyStore = MockKeyStore()
+        keyStore.key = "key"
+        let client = MockClient(result: .success(CreditsSnapshot(totalCredits: 3, totalUsage: 0)))
+
+        let firstNotifier = MockNotifier()
+        let first = CreditsStore(
+            client: client,
+            keyStore: keyStore,
+            userDefaults: defaults,
+            notificationService: firstNotifier
+        )
+        await first.refresh()
+        XCTAssertEqual(firstNotifier.calls.count, 1)
+
+        let secondNotifier = MockNotifier()
+        let second = CreditsStore(
+            client: client,
+            keyStore: keyStore,
+            userDefaults: defaults,
+            notificationService: secondNotifier
+        )
+        await second.refresh()
+        XCTAssertEqual(secondNotifier.calls.count, 0)
     }
 }

@@ -4,8 +4,7 @@
 - Native SwiftUI, macOS 14+, local Xcode build
 - Menu-bar-only app (`LSUIElement`, no Dock icon)
 - Menu bar: `creditcard.fill` icon + `$12.34` (monospaced digits, tooltip)
-- Popover: balance, last updated/stale state, refresh, open OpenRouter, toggle floating panel, settings, quit
-- Optional always-on-top floating panel
+- Popover: balance, last updated/stale state, refresh, open OpenRouter, settings, quit
 - OpenRouter **management API key**, stored in Keychain
 - Refresh every 5 minutes + low-balance notification
 - USD formatting
@@ -25,28 +24,24 @@
 
 ### Popover
 - Large balance, last updated / stale / error state
-- Refresh, Open OpenRouter, toggle floating panel, Settings, Quit
+- Refresh, Open OpenRouter, Settings, Quit
 
 ### Settings
 - "OpenRouter management API key" secure field, Save + Test Connection
 - Low-balance threshold, default $5
-- "Show floating panel" toggle, default off
 - Launch at login toggle
 - Refresh interval shown as 5 minutes
 - Keychain explanation (local only, never logged)
 
-### Floating panel
-- Borderless `NSPanel`, `.floating` level
-- Visible on all spaces and over fullscreen, does not steal focus
-- Draggable, remembers position, close button
-- Balance, stale/error indicator, refresh button
-- Toggle from popover and settings
+### Notifications
+- Low-balance notification once per downward threshold crossing
+- In-app warning remains visible as a fallback if notifications are unavailable
 
 ## Architecture
 ```
 OpenRouterCredits/
   OpenRouterCreditsApp.swift      # MenuBarExtra + Settings scene
-  AppDelegate.swift               # accessory app, wake notifications, panel lifecycle
+  AppDelegate.swift               # accessory app, wake notifications, app lifecycle
   Models/
     CreditsSnapshot.swift
     CreditsResponse.swift
@@ -55,15 +50,15 @@ OpenRouterCredits/
     KeychainStore.swift
     CreditsStore.swift            # @Observable state + refresh loop
     NotificationService.swift
+    LowBalanceTracker.swift
+    LaunchAtLoginController.swift
   UI/
     MenuBarLabel.swift
     PopoverView.swift
     SettingsView.swift
-    FloatingPanel.swift
-    FloatingPanelView.swift
   Resources/Assets.xcassets
   Info.plist                      # LSUIElement = true
-  project.yml                     # XcodeGen, or checked-in .xcodeproj
+  OpenRouterCredits.xcodeproj     # checked-in Xcode project
 ```
 
 - `CreditsStore` owns balance, loading, error, last-updated, refresh scheduling
@@ -77,7 +72,7 @@ OpenRouterCredits/
 1. Xcode project, menu-bar app, settings shell
 2. Keychain + API client + balance display
 3. 5-minute refresh, wake refresh, popover, stale state
-4. Floating panel + low-balance notification
+4. Low-balance notification + launch at login
 5. Tests, app icon, README, polish
 
 ## Tests
@@ -85,7 +80,7 @@ OpenRouterCredits/
 - JSON decoding with missing optional fields
 - Error mapping: 401, 403, 500, offline
 - Threshold-crossing notification logic
-- Manual: no key, bad key, expired key, sleep/wake, offline, fullscreen spaces, multiple displays, menu bar truncation
+- Manual: no key, bad key, expired key, sleep/wake, offline, multiple displays, menu bar truncation
 
 ## Risks
 - Management key is account-level admin: Keychain only
@@ -96,6 +91,7 @@ OpenRouterCredits/
 - Multiple accounts/workspaces
 - Usage history or charts
 - Auto-update
+- Always-on-top floating panel
 
 ## Diagnostic
 - `check-credits.sh` prompts for the key and prints total credits, total usage, and remaining

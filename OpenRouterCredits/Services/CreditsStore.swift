@@ -1,8 +1,7 @@
 import Foundation
 import Observation
 
-/// Observable application state shared by the menu bar, popover, settings and
-/// floating panel.
+/// Observable application state shared by the menu bar, popover and settings.
 @MainActor
 @Observable
 final class CreditsStore {
@@ -22,6 +21,10 @@ final class CreditsStore {
     private var cachedAPIKey: String?
     private var keyLoadFailed = false
 
+    private let userDefaults: UserDefaults
+    private let notificationService: LowBalanceNotifying
+    private var lowBalanceTracker: LowBalanceTracker
+
     private(set) var balance: Decimal?
     private(set) var lastUpdated: Date?
     private(set) var error: CreditsError?
@@ -31,11 +34,18 @@ final class CreditsStore {
     init(
         client: CreditsFetching = OpenRouterAPIClient(),
         keyStore: APIKeyStoring = KeychainStore(),
-        now: @escaping () -> Date = Date.init
+        now: @escaping () -> Date = Date.init,
+        userDefaults: UserDefaults = .standard,
+        notificationService: LowBalanceNotifying = NotificationService()
     ) {
         self.client = client
         self.keyStore = keyStore
         self.now = now
+        self.userDefaults = userDefaults
+        self.notificationService = notificationService
+        self.lowBalanceTracker = LowBalanceTracker(
+            wasBelowThreshold: userDefaults.bool(forKey: AppSettings.lowBalanceWasBelowKey)
+        )
 
         do {
             let storedKey = try keyStore.readAPIKey()
@@ -76,6 +86,15 @@ final class CreditsStore {
 
     var nextRefreshDelay: TimeInterval {
         Backoff.delay(afterFailures: consecutiveFailures, retryAfter: retryAfter)
+    }
+
+    var lowBalanceThreshold: Decimal {
+        AppSettings.lowBalanceThreshold(from: userDefaults)
+    }
+
+    var isLowBalance: Bool {
+        guard let balance else { return false }
+        return balance < lowBalanceThreshold
     }
 
     /// Starts the background refresh loop. Refreshes immediately, then every
@@ -136,6 +155,7 @@ final class CreditsStore {
             lastUpdated = now()
             error = nil
             resetFailureState()
+            evaluateLowBalance(remaining: snapshot.remaining)
         } catch is CancellationError {
             return
         } catch let creditsError as CreditsError {
@@ -166,6 +186,8 @@ final class CreditsStore {
         lastUpdated = nil
         error = .missingAPIKey
         resetFailureState()
+        lowBalanceTracker = LowBalanceTracker()
+        userDefaults.set(false, forKey: AppSettings.lowBalanceWasBelowKey)
     }
 
     /// Returns the cached key so the Settings field can display it using the
@@ -219,5 +241,19 @@ final class CreditsStore {
     private func resetFailureState() {
         consecutiveFailures = 0
         retryAfter = nil
+    }
+
+    private func evaluateLowBalance(remaining: Decimal) {
+        let threshold = lowBalanceThreshold
+        let shouldNotify = lowBalanceTracker.shouldNotify(balance: remaining, threshold: threshold)
+
+        userDefaults.set(
+            lowBalanceTracker.wasBelowThreshold,
+            forKey: AppSettings.lowBalanceWasBelowKey
+        )
+
+        if shouldNotify {
+            notificationService.notifyLowBalance(balance: remaining, threshold: threshold)
+        }
     }
 }

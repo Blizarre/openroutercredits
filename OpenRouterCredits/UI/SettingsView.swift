@@ -3,6 +3,7 @@ import SwiftUI
 
 struct SettingsView: View {
     @Environment(CreditsStore.self) private var store
+    @Environment(LaunchAtLoginController.self) private var launchAtLogin
 
     @State private var apiKey = ""
     @State private var savedKey = ""
@@ -11,7 +12,6 @@ struct SettingsView: View {
     @State private var isTestingConnection = false
 
     @AppStorage("lowBalanceThreshold") private var lowBalanceThreshold = 5.0
-    @AppStorage("showFloatingPanel") private var showFloatingPanel = false
 
     var body: some View {
         Form {
@@ -66,9 +66,19 @@ struct SettingsView: View {
             }
 
             Section("Display") {
-                Toggle("Show floating panel", isOn: $showFloatingPanel)
-                Toggle("Launch at login", isOn: .constant(false))
-                    .disabled(true)
+                Toggle(
+                    "Launch at login",
+                    isOn: Binding(
+                        get: { launchAtLogin.isEnabled },
+                        set: { launchAtLogin.setEnabled($0) }
+                    )
+                )
+
+                if let error = launchAtLogin.errorMessage {
+                    Text(error)
+                        .font(.caption)
+                        .foregroundStyle(.red)
+                }
             }
 
             Section("Security") {
