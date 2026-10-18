@@ -305,6 +305,34 @@ final class CreditsStoreTests: XCTestCase {
         XCTAssertEqual(notifier.calls, [MockNotifier.Call(balance: 8, threshold: 10)])
     }
 
+    func testOpeningPopoverAfterThresholdChangeUpdatesWarningWithoutNetwork() async {
+        let defaults = makeTestDefaults()
+        defaults.set(5.0, forKey: AppSettings.lowBalanceThresholdKey)
+        let keyStore = MockKeyStore()
+        keyStore.key = "key"
+        let client = MockClient(result: .success(CreditsSnapshot(totalCredits: 9, totalUsage: 0)))
+        let store = CreditsStore(
+            client: client,
+            keyStore: keyStore,
+            userDefaults: defaults,
+            notificationService: MockNotifier()
+        )
+
+        await store.refresh()
+        XCTAssertFalse(store.isLowBalance)
+        XCTAssertEqual(client.callCount, 1)
+
+        defaults.set(20.0, forKey: AppSettings.lowBalanceThresholdKey)
+        await store.refreshIfNeeded()
+        XCTAssertTrue(store.isLowBalance)
+        XCTAssertEqual(client.callCount, 1)
+
+        defaults.set(2.0, forKey: AppSettings.lowBalanceThresholdKey)
+        await store.refreshIfNeeded()
+        XCTAssertFalse(store.isLowBalance)
+        XCTAssertEqual(client.callCount, 1)
+    }
+
     func testRaisingThresholdAboveBalanceDoesNotNotify() async {
         let defaults = makeTestDefaults()
         defaults.set(2.0, forKey: AppSettings.lowBalanceThresholdKey)

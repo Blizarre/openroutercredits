@@ -106,6 +106,9 @@ struct SettingsView: View {
             apiKey = storedKey
             savedKey = storedKey
         }
+        .onChange(of: lowBalanceThreshold) { _, _ in
+            store.syncLowBalanceThreshold()
+        }
     }
 
     private var trimmedKey: String {

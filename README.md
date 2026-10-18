@@ -59,8 +59,8 @@ You can also open `OpenRouterCredits.xcodeproj` in Xcode and run the
   the popover refreshes only when the data is missing, stale, or errored.
 - Wake from sleep triggers a refresh. Overlapping requests are ignored.
 - Changing the low-balance threshold does not refresh or send a notification.
-  The new value is used for the in-app warning and for crossing detection on
-  the next refresh.
+  The new value is used immediately for the in-app warning and for crossing
+  detection on the next refresh.
 - Retryable failures (HTTP 429, 5xx, network) use exponential backoff
   (60 s → 120 s → … → 900 s, capped) and honor `Retry-After`; auth and decoding
   errors wait for the normal interval. Data older than 10 minutes is marked

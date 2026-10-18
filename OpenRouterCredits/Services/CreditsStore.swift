@@ -30,6 +30,7 @@ final class CreditsStore {
     private(set) var error: CreditsError?
     private(set) var isLoading = false
     private(set) var hasAPIKey: Bool
+    private(set) var lowBalanceThreshold: Decimal
 
     init(
         client: CreditsFetching = OpenRouterAPIClient(),
@@ -43,6 +44,7 @@ final class CreditsStore {
         self.now = now
         self.userDefaults = userDefaults
         self.notificationService = notificationService
+        self.lowBalanceThreshold = AppSettings.lowBalanceThreshold(from: userDefaults)
         self.lowBalanceTracker = LowBalanceTracker(
             wasBelowThreshold: userDefaults.bool(forKey: AppSettings.lowBalanceWasBelowKey)
         )
@@ -73,8 +75,12 @@ final class CreditsStore {
         Backoff.delay(afterFailures: consecutiveFailures, retryAfter: retryAfter)
     }
 
-    var lowBalanceThreshold: Decimal {
-        AppSettings.lowBalanceThreshold(from: userDefaults)
+    /// Re-reads the threshold so the warning updates without a network refresh.
+    func syncLowBalanceThreshold() {
+        let value = AppSettings.lowBalanceThreshold(from: userDefaults)
+        if value != lowBalanceThreshold {
+            lowBalanceThreshold = value
+        }
     }
 
     var isLowBalance: Bool {
@@ -110,6 +116,8 @@ final class CreditsStore {
     /// Refreshes when there is no data yet or the last update is older than
     /// the normal refresh interval. Used when the popover opens.
     func refreshIfNeeded() async {
+        syncLowBalanceThreshold()
+
         if let lastUpdated,
            error == nil,
            now().timeIntervalSince(lastUpdated) < Self.refreshInterval {
@@ -120,6 +128,7 @@ final class CreditsStore {
 
     /// Fetches the balance from OpenRouter unless a request is already running.
     func refresh() async {
+        syncLowBalanceThreshold()
         guard !isLoading else { return }
 
         isLoading = true
