@@ -6,6 +6,8 @@ below a threshold you choose.
 
 ![OpenRouter Credits screenshot](screenshot.png)
 
+Written by [DeepSeek v4.1 Flash 1017](https://openrouter.ai/deepseek/deepseek-v4.1-flash-1017) using [Opencode](https://opencode.ai).
+
 ## Features
 
 - Menu bar displays `creditcard.fill` and the current USD balance
