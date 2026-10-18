@@ -22,7 +22,6 @@ struct SettingsView: View {
                         text: $apiKey,
                         prompt: Text("Paste management key")
                     )
-                    .textContentType(.password)
 
                     if store.hasAPIKey && !trimmedKey.isEmpty && trimmedKey == savedKey {
                         Label("Saved", systemImage: "checkmark.circle.fill")

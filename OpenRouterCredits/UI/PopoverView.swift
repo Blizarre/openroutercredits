@@ -31,7 +31,7 @@ struct PopoverView: View {
                     .frame(width: 7, height: 7)
                 Text(statusText)
                     .font(.callout)
-                    .foregroundStyle(store.error == nil ? Color.secondary : Color.red)
+                    .foregroundStyle(statusColor)
                     .fixedSize(horizontal: false, vertical: true)
             }
 
@@ -70,7 +70,7 @@ struct PopoverView: View {
         .padding(16)
         .frame(width: 300)
         .task {
-            await store.refresh()
+            await store.refreshIfNeeded()
         }
     }
 
@@ -82,13 +82,15 @@ struct PopoverView: View {
             return error.localizedDescription
         }
         if let lastUpdated = store.lastUpdated {
-            return "Updated \(lastUpdated.formatted(date: .omitted, time: .shortened))"
+            let updated = lastUpdated.formatted(date: .omitted, time: .shortened)
+            return store.isStale ? "Updated \(updated) · stale" : "Updated \(updated)"
         }
         return "No balance loaded yet."
     }
 
     private var statusColor: Color {
         if store.error != nil { return .red }
+        if store.isStale { return .orange }
         if store.lastUpdated != nil { return .green }
         return .secondary
     }
