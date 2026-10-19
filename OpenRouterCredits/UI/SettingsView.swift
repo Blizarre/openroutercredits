@@ -10,8 +10,15 @@ struct SettingsView: View {
     @State private var connectionMessage: String?
     @State private var connectionMessageIsError = false
     @State private var isTestingConnection = false
+    @State private var settingsApplyTask: Task<Void, Never>?
 
-    @AppStorage("lowBalanceThreshold") private var lowBalanceThreshold = 5.0
+    @AppStorage(AppSettings.lowBalanceThresholdKey) private var lowBalanceThreshold = 5.0
+    @AppStorage(AppSettings.slowRefreshIntervalKey)
+    private var slowRefreshSeconds = AppSettings.defaultSlowRefreshInterval
+    @AppStorage(AppSettings.fastRefreshIntervalKey)
+    private var fastRefreshSeconds = AppSettings.defaultFastRefreshInterval
+    @AppStorage(AppSettings.unchangedRefreshLimitKey)
+    private var unchangedRefreshLimit = AppSettings.defaultUnchangedRefreshLimit
 
     var body: some View {
         Form {
@@ -60,7 +67,38 @@ struct SettingsView: View {
 
             Section("Balance") {
                 TextField("Low-balance threshold (USD)", value: $lowBalanceThreshold, format: .number)
-                Text("Refreshes every 5 minutes.")
+            }
+
+            Section("Refresh") {
+                LabeledContent("Slow refresh") {
+                    HStack(spacing: 6) {
+                        TextField("Slow refresh", value: slowMinutes, format: .number)
+                            .labelsHidden()
+                            .multilineTextAlignment(.trailing)
+                            .frame(width: 60)
+                        Text("min")
+                            .foregroundStyle(.secondary)
+                    }
+                }
+
+                LabeledContent("Fast refresh") {
+                    HStack(spacing: 6) {
+                        TextField("Fast refresh", value: fastMinutes, format: .number)
+                            .labelsHidden()
+                            .multilineTextAlignment(.trailing)
+                            .frame(width: 60)
+                        Text("min")
+                            .foregroundStyle(.secondary)
+                    }
+                }
+
+                Stepper(
+                    "Slow down after \(unchangedRefreshLimit) unchanged checks",
+                    value: $unchangedRefreshLimit,
+                    in: 1...50
+                )
+
+                Text("The app refreshes slowly while the balance is steady. A change switches it to the fast interval until \(unchangedRefreshLimit) consecutive checks show no change.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -109,6 +147,30 @@ struct SettingsView: View {
         .onChange(of: lowBalanceThreshold) { _, _ in
             store.syncLowBalanceThreshold()
         }
+        .onChange(of: slowRefreshSeconds) { _, _ in scheduleRefreshSettingsApply() }
+        .onChange(of: fastRefreshSeconds) { _, _ in scheduleRefreshSettingsApply() }
+        .onChange(of: unchangedRefreshLimit) { _, _ in scheduleRefreshSettingsApply() }
+    }
+
+    private var slowMinutes: Binding<Double> {
+        Binding(
+            get: { slowRefreshSeconds / 60 },
+            set: { newValue in
+                slowRefreshSeconds = max(newValue, 1) * 60
+                if fastRefreshSeconds > slowRefreshSeconds {
+                    fastRefreshSeconds = slowRefreshSeconds
+                }
+            }
+        )
+    }
+
+    private var fastMinutes: Binding<Double> {
+        Binding(
+            get: { fastRefreshSeconds / 60 },
+            set: { newValue in
+                fastRefreshSeconds = min(max(newValue, 0.5), slowRefreshSeconds / 60) * 60
+            }
+        )
     }
 
     private var trimmedKey: String {
@@ -120,6 +182,16 @@ struct SettingsView: View {
         let version = info?["CFBundleShortVersionString"] as? String ?? "1.0"
         let build = info?["CFBundleVersion"] as? String ?? "1"
         return "OpenRouter Credits \(version) (\(build))"
+    }
+
+    private func scheduleRefreshSettingsApply() {
+        settingsApplyTask?.cancel()
+        settingsApplyTask = Task {
+            try? await Task.sleep(for: .milliseconds(400))
+            guard !Task.isCancelled else { return }
+            await store.syncRefreshSettings()
+            await store.restartRefreshLoop()
+        }
     }
 
     private func saveKey() {

@@ -2,9 +2,10 @@ import Foundation
 
 /// Retry timing for the background refresh loop.
 ///
-/// Successful refreshes use the normal five-minute interval. Retryable
-/// failures start with a short delay and double up to a cap. A server-provided
-/// `Retry-After` value can extend the delay further.
+/// Successful refreshes wait for the configured base interval (the slow or
+/// fast tier). Retryable failures ignore the base interval, start at
+/// `minimumRetryDelay` and double up to a cap. A server-provided `Retry-After`
+/// value can extend the delay further.
 enum Backoff {
     static let defaultBaseInterval: TimeInterval = 300
     static let minimumRetryDelay: TimeInterval = 60

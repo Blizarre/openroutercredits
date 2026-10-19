@@ -132,7 +132,7 @@ final class CreditsStoreTests: XCTestCase {
         await store.refresh()
         XCTAssertFalse(store.isStale)
 
-        clock.now = clock.now.addingTimeInterval(CreditsStore.staleInterval + 1)
+        clock.now = clock.now.addingTimeInterval(AppSettings.defaultSlowRefreshInterval * 2 + 1)
         XCTAssertTrue(store.isStale)
     }
 
@@ -254,7 +254,7 @@ final class CreditsStoreTests: XCTestCase {
         await store.refresh()
         XCTAssertEqual(client.callCount, 1)
 
-        clock.now = clock.now.addingTimeInterval(CreditsStore.refreshInterval - 1)
+        clock.now = clock.now.addingTimeInterval(store.currentRefreshInterval - 1)
         await store.refreshIfNeeded()
         XCTAssertEqual(client.callCount, 1)
 
@@ -462,5 +462,193 @@ final class CreditsStoreTests: XCTestCase {
         await store.refresh()
 
         XCTAssertEqual(notifier.calls, [MockNotifier.Call(balance: 8, threshold: 10)])
+    }
+
+    func testFirstSuccessfulLoadStaysOnSlowInterval() async {
+        let keyStore = MockKeyStore()
+        keyStore.key = "key"
+        let client = MockClient(result: .success(CreditsSnapshot(totalCredits: 10, totalUsage: 0)))
+        let store = CreditsStore(
+            client: client,
+            keyStore: keyStore,
+            userDefaults: makeTestDefaults(),
+            notificationService: MockNotifier()
+        )
+
+        await store.refresh()
+
+        XCTAssertEqual(store.currentRefreshInterval, 300)
+        XCTAssertEqual(store.nextRefreshDelay, 300)
+    }
+
+    func testBalanceChangeSwitchesToFastInterval() async {
+        let keyStore = MockKeyStore()
+        keyStore.key = "key"
+        let client = MockClient(result: .success(CreditsSnapshot(totalCredits: 10, totalUsage: 0)))
+        let store = CreditsStore(
+            client: client,
+            keyStore: keyStore,
+            userDefaults: makeTestDefaults(),
+            notificationService: MockNotifier()
+        )
+
+        await store.refresh()
+        client.result = .success(CreditsSnapshot(totalCredits: 9, totalUsage: 0))
+        await store.refresh()
+
+        XCTAssertEqual(store.currentRefreshInterval, 60)
+        XCTAssertEqual(store.nextRefreshDelay, 60)
+    }
+
+    func testFastIntervalReturnsToSlowAfterUnchangedLimit() async {
+        let defaults = makeTestDefaults()
+        defaults.set(3, forKey: AppSettings.unchangedRefreshLimitKey)
+        let keyStore = MockKeyStore()
+        keyStore.key = "key"
+        let client = MockClient(result: .success(CreditsSnapshot(totalCredits: 10, totalUsage: 0)))
+        let store = CreditsStore(
+            client: client,
+            keyStore: keyStore,
+            userDefaults: defaults,
+            notificationService: MockNotifier()
+        )
+
+        await store.refresh()
+        client.result = .success(CreditsSnapshot(totalCredits: 9, totalUsage: 0))
+        await store.refresh()
+        XCTAssertEqual(store.currentRefreshInterval, 60)
+
+        await store.refresh()
+        XCTAssertEqual(store.currentRefreshInterval, 60)
+
+        await store.refresh()
+        XCTAssertEqual(store.currentRefreshInterval, 60)
+
+        await store.refresh()
+        XCTAssertEqual(store.currentRefreshInterval, 300)
+    }
+
+    func testChangeResetsUnchangedCount() async {
+        let defaults = makeTestDefaults()
+        defaults.set(2, forKey: AppSettings.unchangedRefreshLimitKey)
+        let keyStore = MockKeyStore()
+        keyStore.key = "key"
+        let client = MockClient(result: .success(CreditsSnapshot(totalCredits: 10, totalUsage: 0)))
+        let store = CreditsStore(
+            client: client,
+            keyStore: keyStore,
+            userDefaults: defaults,
+            notificationService: MockNotifier()
+        )
+
+        await store.refresh()
+        client.result = .success(CreditsSnapshot(totalCredits: 9, totalUsage: 0))
+        await store.refresh()
+        XCTAssertEqual(store.currentRefreshInterval, 60)
+
+        await store.refresh()
+        XCTAssertEqual(store.currentRefreshInterval, 60)
+
+        client.result = .success(CreditsSnapshot(totalCredits: 8, totalUsage: 0))
+        await store.refresh()
+        XCTAssertEqual(store.currentRefreshInterval, 60)
+
+        await store.refresh()
+        XCTAssertEqual(store.currentRefreshInterval, 60)
+
+        await store.refresh()
+        XCTAssertEqual(store.currentRefreshInterval, 300)
+    }
+
+    func testFailureBackoffOverridesFastInterval() async {
+        let defaults = makeTestDefaults()
+        defaults.set(30.0, forKey: AppSettings.fastRefreshIntervalKey)
+        let keyStore = MockKeyStore()
+        keyStore.key = "key"
+        let client = MockClient(result: .success(CreditsSnapshot(totalCredits: 10, totalUsage: 0)))
+        let store = CreditsStore(
+            client: client,
+            keyStore: keyStore,
+            userDefaults: defaults,
+            notificationService: MockNotifier()
+        )
+
+        await store.refresh()
+        client.result = .success(CreditsSnapshot(totalCredits: 9, totalUsage: 0))
+        await store.refresh()
+        XCTAssertEqual(store.nextRefreshDelay, 30)
+
+        client.result = .failure(CreditsError.network)
+        await store.refresh()
+        XCTAssertEqual(store.nextRefreshDelay, 60)
+    }
+
+    func testRefreshIfNeededUsesFastInterval() async {
+        let clock = TestClock()
+        let keyStore = MockKeyStore()
+        keyStore.key = "key"
+        let client = MockClient(result: .success(CreditsSnapshot(totalCredits: 10, totalUsage: 0)))
+        let store = CreditsStore(
+            client: client,
+            keyStore: keyStore,
+            now: { clock.now },
+            userDefaults: makeTestDefaults(),
+            notificationService: MockNotifier()
+        )
+
+        await store.refresh()
+        client.result = .success(CreditsSnapshot(totalCredits: 9, totalUsage: 0))
+        await store.refresh()
+        XCTAssertEqual(client.callCount, 2)
+
+        clock.now = clock.now.addingTimeInterval(59)
+        await store.refreshIfNeeded()
+        XCTAssertEqual(client.callCount, 2)
+
+        clock.now = clock.now.addingTimeInterval(2)
+        await store.refreshIfNeeded()
+        XCTAssertEqual(client.callCount, 3)
+    }
+
+    func testRefreshSettingsDefaults() {
+        let defaults = makeTestDefaults()
+
+        XCTAssertEqual(AppSettings.slowRefreshInterval(from: defaults), 300)
+        XCTAssertEqual(AppSettings.fastRefreshInterval(from: defaults), 60)
+        XCTAssertEqual(AppSettings.unchangedRefreshLimit(from: defaults), 5)
+    }
+
+    func testStaleUsesConfiguredSlowInterval() async {
+        let clock = TestClock()
+        let defaults = makeTestDefaults()
+        defaults.set(120.0, forKey: AppSettings.slowRefreshIntervalKey)
+        let keyStore = MockKeyStore()
+        keyStore.key = "key"
+        let client = MockClient(result: .success(CreditsSnapshot(totalCredits: 10, totalUsage: 2)))
+        let store = CreditsStore(
+            client: client,
+            keyStore: keyStore,
+            now: { clock.now },
+            userDefaults: defaults,
+            notificationService: MockNotifier()
+        )
+
+        await store.refresh()
+        clock.now = clock.now.addingTimeInterval(239)
+        XCTAssertFalse(store.isStale)
+
+        clock.now = clock.now.addingTimeInterval(2)
+        XCTAssertTrue(store.isStale)
+    }
+
+    func testRefreshSettingsAreClamped() {
+        let defaults = makeTestDefaults()
+        defaults.set(10.0, forKey: AppSettings.slowRefreshIntervalKey)
+        defaults.set(600.0, forKey: AppSettings.fastRefreshIntervalKey)
+        defaults.set(0, forKey: AppSettings.unchangedRefreshLimitKey)
+
+        XCTAssertEqual(AppSettings.slowRefreshInterval(from: defaults), 60)
+        XCTAssertEqual(AppSettings.fastRefreshInterval(from: defaults), 60)
+        XCTAssertEqual(AppSettings.unchangedRefreshLimit(from: defaults), 1)
     }
 }

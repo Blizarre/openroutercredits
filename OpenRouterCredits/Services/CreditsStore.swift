@@ -5,8 +5,7 @@ import Observation
 @MainActor
 @Observable
 final class CreditsStore {
-    static let refreshInterval: TimeInterval = 300
-    static let staleInterval: TimeInterval = 600
+    private static let refreshScheduleCheckInterval: TimeInterval = 30
 
     private let client: CreditsFetching
     private let keyStore: APIKeyStoring
@@ -15,6 +14,12 @@ final class CreditsStore {
     private var refreshTask: Task<Void, Never>?
     private var consecutiveFailures = 0
     private var retryAfter: TimeInterval?
+
+    private var slowRefreshInterval: TimeInterval
+    private var fastRefreshInterval: TimeInterval
+    private var unchangedRefreshLimit: Int
+    private var isFastTier = false
+    private var unchangedRefreshCount = 0
 
     /// The key is read from the Keychain once per launch and then kept in
     /// memory only. This avoids a Keychain prompt on every refresh.
@@ -44,6 +49,9 @@ final class CreditsStore {
         self.now = now
         self.userDefaults = userDefaults
         self.notificationService = notificationService
+        self.slowRefreshInterval = AppSettings.slowRefreshInterval(from: userDefaults)
+        self.fastRefreshInterval = AppSettings.fastRefreshInterval(from: userDefaults)
+        self.unchangedRefreshLimit = AppSettings.unchangedRefreshLimit(from: userDefaults)
         self.lowBalanceThreshold = AppSettings.lowBalanceThreshold(from: userDefaults)
         self.lowBalanceTracker = LowBalanceTracker(
             wasBelowThreshold: userDefaults.bool(forKey: AppSettings.lowBalanceWasBelowKey)
@@ -65,14 +73,23 @@ final class CreditsStore {
         return MoneyFormatter.string(from: balance)
     }
 
-    /// True when the displayed data is older than two refresh intervals.
+    /// True when the displayed data is older than two slow refresh intervals.
     var isStale: Bool {
         guard let lastUpdated else { return false }
-        return now().timeIntervalSince(lastUpdated) > Self.staleInterval
+        return now().timeIntervalSince(lastUpdated) > slowRefreshInterval * 2
+    }
+
+    /// The interval currently used after a successful refresh.
+    var currentRefreshInterval: TimeInterval {
+        isFastTier ? fastRefreshInterval : slowRefreshInterval
     }
 
     var nextRefreshDelay: TimeInterval {
-        Backoff.delay(afterFailures: consecutiveFailures, retryAfter: retryAfter)
+        Backoff.delay(
+            afterFailures: consecutiveFailures,
+            baseInterval: currentRefreshInterval,
+            retryAfter: retryAfter
+        )
     }
 
     /// Re-reads the threshold so the warning updates without a network refresh.
@@ -83,13 +100,24 @@ final class CreditsStore {
         }
     }
 
+    /// Re-reads the refresh schedule so Settings changes are picked up without
+    /// relaunching the app.
+    func syncRefreshSettings() {
+        slowRefreshInterval = AppSettings.slowRefreshInterval(from: userDefaults)
+        fastRefreshInterval = AppSettings.fastRefreshInterval(from: userDefaults)
+        unchangedRefreshLimit = AppSettings.unchangedRefreshLimit(from: userDefaults)
+    }
+
     var isLowBalance: Bool {
         guard let balance else { return false }
         return balance < lowBalanceThreshold
     }
 
-    /// Starts the background refresh loop. Refreshes immediately, then every
-    /// five minutes (or sooner when backing off from a transient failure).
+    /// Starts the background refresh loop. Refreshes immediately, then uses the
+    /// slow interval while the balance is steady and the fast interval after a
+    /// change (or sooner when backing off from a transient failure). The delay
+    /// is rechecked periodically so a tier change takes effect before the
+    /// currently scheduled refresh.
     func start() {
         guard refreshTask == nil else { return }
 
@@ -97,12 +125,20 @@ final class CreditsStore {
             while !Task.isCancelled {
                 guard let self else { return }
                 await self.refresh()
+                guard !Task.isCancelled else { return }
 
-                let delay = self.nextRefreshDelay
-                do {
-                    try await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
-                } catch {
-                    return
+                let refreshedAt = self.now()
+                while !Task.isCancelled {
+                    let remaining = self.nextRefreshDelay
+                        - self.now().timeIntervalSince(refreshedAt)
+                    if remaining <= 0 { break }
+
+                    let slice = min(remaining, Self.refreshScheduleCheckInterval)
+                    do {
+                        try await Task.sleep(nanoseconds: UInt64(slice * 1_000_000_000))
+                    } catch {
+                        return
+                    }
                 }
             }
         }
@@ -113,14 +149,23 @@ final class CreditsStore {
         refreshTask = nil
     }
 
+    /// Restarts the loop when the refresh schedule changes so the new delays
+    /// take effect immediately. Does nothing if the loop was never started.
+    func restartRefreshLoop() {
+        guard refreshTask != nil else { return }
+        stop()
+        start()
+    }
+
     /// Refreshes when there is no data yet or the last update is older than
-    /// the normal refresh interval. Used when the popover opens.
+    /// the current refresh interval. Used when the popover opens.
     func refreshIfNeeded() async {
         syncLowBalanceThreshold()
+        syncRefreshSettings()
 
         if let lastUpdated,
            error == nil,
-           now().timeIntervalSince(lastUpdated) < Self.refreshInterval {
+           now().timeIntervalSince(lastUpdated) < currentRefreshInterval {
             return
         }
         await refresh()
@@ -129,6 +174,7 @@ final class CreditsStore {
     /// Fetches the balance from OpenRouter unless a request is already running.
     func refresh() async {
         syncLowBalanceThreshold()
+        syncRefreshSettings()
         guard !isLoading else { return }
 
         isLoading = true
@@ -145,10 +191,12 @@ final class CreditsStore {
 
         do {
             let snapshot = try await client.fetchCredits(apiKey: apiKey)
+            let previousBalance = balance
             balance = snapshot.remaining
             lastUpdated = now()
             error = nil
             resetFailureState()
+            updateRefreshTier(previousBalance: previousBalance, newBalance: snapshot.remaining)
             evaluateLowBalance(remaining: snapshot.remaining)
         } catch is CancellationError {
             return
@@ -169,6 +217,7 @@ final class CreditsStore {
         hasAPIKey = true
         error = nil
         resetFailureState()
+        resetRefreshTier()
     }
 
     func deleteAPIKey() throws {
@@ -180,6 +229,7 @@ final class CreditsStore {
         lastUpdated = nil
         error = .missingAPIKey
         resetFailureState()
+        resetRefreshTier()
         lowBalanceTracker = LowBalanceTracker()
         userDefaults.set(false, forKey: AppSettings.lowBalanceWasBelowKey)
     }
@@ -217,6 +267,31 @@ final class CreditsStore {
         }
     }
 
+    /// A change switches to the fast interval. While fast, consecutive
+    /// unchanged checks count toward returning to the slow interval. The first
+    /// successful load is a baseline, not a change.
+    private func updateRefreshTier(previousBalance: Decimal?, newBalance: Decimal) {
+        guard let previousBalance else {
+            isFastTier = false
+            unchangedRefreshCount = 0
+            return
+        }
+
+        if previousBalance != newBalance {
+            isFastTier = true
+            unchangedRefreshCount = 0
+            return
+        }
+
+        guard isFastTier else { return }
+
+        unchangedRefreshCount += 1
+        if unchangedRefreshCount >= unchangedRefreshLimit {
+            isFastTier = false
+            unchangedRefreshCount = 0
+        }
+    }
+
     private func recordFailure(_ creditsError: CreditsError) {
         guard creditsError.isRetryable else {
             resetFailureState()
@@ -235,6 +310,11 @@ final class CreditsStore {
     private func resetFailureState() {
         consecutiveFailures = 0
         retryAfter = nil
+    }
+
+    private func resetRefreshTier() {
+        isFastTier = false
+        unchangedRefreshCount = 0
     }
 
     private func evaluateLowBalance(remaining: Decimal) {

@@ -13,8 +13,9 @@ Written by [DeepSeek v4.1 Flash 1017](https://openrouter.ai/deepseek/deepseek-v4
 - Menu bar displays `creditcard.fill` and the current USD balance
 - Popover with large balance, last-updated time, stale/error state, refresh,
   OpenRouter link, Settings and Quit
-- Refreshes immediately at launch, every 5 minutes, after sleep/wake, and when
-  the popover opens with stale data
+- Refreshes immediately at launch and after sleep/wake. While the balance is
+  steady it polls slowly; a change switches it to a fast interval until the
+  balance has been unchanged for a configurable number of checks.
 - Low-balance notification once per downward threshold crossing, with an
   in-app orange warning as a fallback
 - Optional launch at login
@@ -52,23 +53,28 @@ You can also open `OpenRouterCredits.xcodeproj` in Xcode and run the
 3. Paste the management key and click **Test Connection**. You should see the
    remaining balance.
 4. Click **Save**. The key goes into the Keychain and the menu bar updates.
-5. Optionally set the low-balance threshold (default `$5`) and enable
-   **Launch at login**.
+5. Optionally set the low-balance threshold (default `$5`), tune the slow and
+   fast refresh intervals, and enable **Launch at login**.
 
 ## How it works
 
 - `CreditsStore` owns the balance, error, loading, last-updated and refresh state.
   It reads the Keychain once per launch and caches the key in memory.
-- The background loop refreshes immediately and then every 5 minutes. Opening
-  the popover refreshes only when the data is missing, stale, or errored.
+- The background loop refreshes immediately, then uses the slow interval
+  (default 5 minutes) while the balance is steady. A changed balance switches
+  to the fast interval (default 1 minute). After a configurable number of
+  consecutive unchanged checks (default 5) it returns to the slow interval.
+  The intervals and check count are editable in Settings.
+- Opening the popover refreshes only when the data is missing, stale, errored,
+  or older than the current tier's interval.
 - Wake from sleep triggers a refresh. Overlapping requests are ignored.
 - Changing the low-balance threshold does not refresh or send a notification.
   The new value is used immediately for the in-app warning and for crossing
   detection on the next refresh.
 - Retryable failures (HTTP 429, 5xx, network) use exponential backoff
   (60 s → 120 s → … → 900 s, capped) and honor `Retry-After`; auth and decoding
-  errors wait for the normal interval. Data older than 10 minutes is marked
-  stale.
+  errors wait for the normal interval. Data older than twice the slow interval
+  is marked stale.
 - A notification is sent only when the balance crosses from at/above the
   threshold to below it. Editing the threshold does not count as a crossing:
   it silently rebases the crossing state. The crossing state is persisted so
@@ -112,7 +118,8 @@ and the app bundle.
 - API error mapping: 401, 403, 429 with `Retry-After`, 5xx, offline/network,
   malformed JSON, Bearer header and endpoint
 - Refresh behavior: no overlapping requests, stale-only popover refresh,
-  retrying after an error, in-memory key caching
+  slow/fast tier switching, returning to slow after unchanged checks, schedule
+  clamping, retrying after an error, in-memory key caching
 - Low-balance crossings: notify once, stay quiet while below, re-arm after
   rising, persisted state, custom threshold, threshold edits do not notify
 
@@ -124,7 +131,7 @@ and the app bundle.
 - [ ] Background refresh and manual Refresh update the “Updated” time
 - [ ] Sleep/wake triggers a refresh
 - [ ] Offline: error shown, app retries with backoff
-- [ ] Stale data (>10 min): orange “stale” status
+- [ ] Stale data (>2× slow interval): orange “stale” status
 - [ ] Low-balance threshold raised above balance: orange warning, no
       notification from the threshold change itself, one notification per
       later crossing
