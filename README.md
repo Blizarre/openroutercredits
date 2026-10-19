@@ -37,14 +37,25 @@ and revoke it if the key is ever exposed.
 The Xcode project is checked in; XcodeGen is not required.
 
 ```sh
-make build   # build into .build/Build/Products/Debug
-make test    # run the unit tests
-make run     # build, ad-hoc sign, and launch
-make icon    # regenerate the app icon PNGs
+make build    # build into .build/Build/Products/Debug
+make release  # build into .build/Build/Products/Release
+make test     # run the unit tests
+make run      # build, sign, and launch
+make icon     # regenerate the app icon PNGs
 ```
 
-You can also open `OpenRouterCredits.xcodeproj` in Xcode and run the
-`OpenRouterCredits` scheme.
+### Signing builds
+
+`scripts/build.sh` uses the stable identity `OpenRouter Credits Local Signing`
+when present, otherwise it falls back to ad-hoc signing. Override it with
+`CODESIGN_IDENTITY`:
+
+```sh
+CODESIGN_IDENTITY="My Self Signed Cert" ./scripts/build.sh Release
+CODESIGN_IDENTITY="My Self Signed Cert" make release
+```
+
+Running the Xcode scheme directly still uses ad-hoc signing.
 
 ## First run
 
@@ -100,13 +111,19 @@ You can also open `OpenRouterCredits.xcodeproj` in Xcode and run the
 
 ### Local build signing caveat
 
-`make run` ad-hoc signs the app. Each rebuild has a new code identity, so macOS
-may ask for Keychain access again after a rebuild; choose **Always Allow**.
-A Developer ID–signed build has a stable identity and does not have this
-problem. Notifications from ad-hoc signed local builds may also be unreliable,
-may show a generic icon, or may not appear at all; the in-app low-balance
-warning always remains available. The embedded app icon is correct in Finder
-and the app bundle.
+Create the `OpenRouter Credits Local Signing` certificate in Keychain Access
+(**Certificate Assistant → Create a Certificate…**, Self Signed Root, Code
+Signing) and trust it for Code Signing. A stable identity lets rebuilds keep
+Keychain access; the ad-hoc fallback prompts again after each build.
+
+After switching from ad-hoc signing, delete and re-enter the key once:
+
+```sh
+security delete-generic-password -s ai.openrouter.credits -a management-api-key
+```
+
+Self-signed builds are for local use only. Notifications may still be
+unreliable; the in-app low-balance warning remains available.
 
 ## Tests
 

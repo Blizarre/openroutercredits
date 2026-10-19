@@ -1,7 +1,10 @@
-.PHONY: build test run icon clean
+.PHONY: build release test run icon clean
 
 build:
 	./scripts/build.sh
+
+release:
+	./scripts/build.sh Release
 
 test:
 	./scripts/test.sh
