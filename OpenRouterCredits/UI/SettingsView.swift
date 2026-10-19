@@ -189,8 +189,8 @@ struct SettingsView: View {
         settingsApplyTask = Task {
             try? await Task.sleep(for: .milliseconds(400))
             guard !Task.isCancelled else { return }
-            await store.syncRefreshSettings()
-            await store.restartRefreshLoop()
+            store.syncRefreshSettings()
+            store.restartRefreshLoop()
         }
     }
 
