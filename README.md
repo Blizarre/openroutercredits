@@ -94,6 +94,17 @@ Running the Xcode scheme directly still uses ad-hoc signing.
 - Money is formatted as USD with two fraction digits, half-up rounding, and
   grouping (for example `$1,234,567.89`).
 
+## Logs
+
+API requests and HTTP status codes are logged with `OSLog` in both Debug and
+Release builds. Stream them with:
+
+```sh
+/usr/bin/log stream --level info --predicate 'subsystem == "ai.openrouter.credits" AND category == "OpenRouterAPI"'
+```
+
+Use `--level debug` instead of `--level info` to include cancelled requests.
+
 ## Security and privacy
 
 - The management key is stored as a generic password in the login Keychain

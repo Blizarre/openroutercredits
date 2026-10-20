@@ -1,4 +1,5 @@
 import Foundation
+import OSLog
 
 enum CreditsError: Error, Equatable {
     case missingAPIKey
@@ -55,6 +56,11 @@ protocol CreditsFetching {
 struct OpenRouterAPIClient: CreditsFetching {
     static let endpoint = URL(string: "https://openrouter.ai/api/v1/credits")!
 
+    private static let logger = Logger(
+        subsystem: "ai.openrouter.credits",
+        category: "OpenRouterAPI"
+    )
+
     private let session: URLSession
 
     init(session: URLSession = .shared) {
@@ -68,19 +74,32 @@ struct OpenRouterAPIClient: CreditsFetching {
         request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Accept")
 
+        Self.logger.info(
+            "Requesting credits from \(Self.endpoint.absoluteString, privacy: .public)"
+        )
+
         let data: Data
         let response: URLResponse
         do {
             (data, response) = try await session.data(for: request)
         } catch is CancellationError {
+            Self.logger.debug("OpenRouter request cancelled")
             throw CancellationError()
         } catch {
+            Self.logger.error(
+                "OpenRouter request failed: \(error.localizedDescription, privacy: .public)"
+            )
             throw CreditsError.network
         }
 
         guard let httpResponse = response as? HTTPURLResponse else {
+            Self.logger.error("OpenRouter returned a non-HTTP response")
             throw CreditsError.invalidResponse
         }
+
+        Self.logger.info(
+            "OpenRouter responded with status \(httpResponse.statusCode, privacy: .public)"
+        )
 
         switch httpResponse.statusCode {
         case 200:
